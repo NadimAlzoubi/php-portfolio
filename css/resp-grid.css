@@ -1,0 +1,61 @@
+@media (max-width: 576px){
+    .parent-custom {
+      margin: 1.5rem;
+      display: grid;
+      grid-template-columns: repeat(1, 1fr);
+      grid-template-rows: 1fr;
+      grid-column-gap: 30px;
+      grid-row-gap: 30px;
+      
+    }
+  }
+  @media (min-width: 577px){
+    .parent-custom {
+      margin: 1.5rem;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: 1fr;
+      grid-column-gap: 30px;
+      grid-row-gap: 30px;
+      
+    }
+  }
+  @media (min-width: 768px){
+    .parent-custom {
+      margin: 1.5rem;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: 1fr;
+      grid-column-gap: 30px;
+      grid-row-gap: 30px;
+      
+    }
+  }
+  @media (min-width: 992px){
+    .parent-custom {
+      margin: 1.5rem;
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      grid-template-rows: 1fr;
+      grid-column-gap: 30px;
+      grid-row-gap: 30px;
+      
+    }
+  }
+  @media (min-width: 1440px){
+    .parent-custom {
+      margin: 1.5rem;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      grid-template-rows: 1fr;
+      grid-column-gap: 30px;
+      grid-row-gap: 30px;
+      
+    }
+  }
+  .parent-custom form img{
+  width: 100%;
+  aspect-ratio: 16/10;
+  object-fit: cover;
+  border-radius: 5px;
+}
