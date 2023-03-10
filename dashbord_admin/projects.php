@@ -71,7 +71,7 @@ function updateRow($table, $data, $new_cover_pic, $new_all_pics_files, $new_file
     }
     // Remove trailing comma
     $query = rtrim($query, ",");
-    $query .= " WHERE NUM = $id";
+    $query .= " WHERE ID = $id";
     if (mysqli_query($connect, $query)) {
         if (!empty($new_cover_pic['name'])) {
             $pic_name = $new_cover_pic['name'];
@@ -130,7 +130,7 @@ function updateRow($table, $data, $new_cover_pic, $new_all_pics_files, $new_file
     // delete function
     function deleteRow($table, $row_id, $file_name) {
         include('./conn.php');
-        $query = "DELETE FROM " . $table . " WHERE NUM = " . $row_id;
+        $query = "DELETE FROM " . $table . " WHERE ID = " . $row_id;
         if (mysqli_query($connect, $query)) {
             unlink("./assets/projects_files/" . $file_name)
             ?>
@@ -555,7 +555,6 @@ function updateRow($table, $data, $new_cover_pic, $new_all_pics_files, $new_file
                         <div class="form-group">
                             <input type="text" class="form-control" name="simple_des" />
                         </div>
-                    <!-- البيانات الظاهرة للمستخدم بعد النقر -->
                         <div class="sub-title">
                             Select all project images
                         </div>
@@ -583,7 +582,7 @@ function updateRow($table, $data, $new_cover_pic, $new_all_pics_files, $new_file
 
 
 <?php
-
+//how to know lenght of array in php?
 // insert
 // insert
 // insert
@@ -593,10 +592,19 @@ if (isset($_POST['project_send'])) {
     $simple_des = $_POST['simple_des'];
     $full_des = $_POST['full_des'];
     $all_pics = $_FILES['all_pics'];
-    $all_pics_names = serialize($all_pics['name']);
+    $all_pics_names = ($all_pics['name']);
     $file_link = $_FILES['file_link'];
     $file_link_name = $file_link['name'];
-    // insertRow("projects", ["COVER_PIC_NAME" ,"SIMPLE_DES", "ALL_PICS_NAMES", "FULL_DES", "FILE_LINK"], [$cover_pic_name, $simple_des, $all_pics_names, $full_des, $file_link_name], $cover_pic, $all_pics, $file_link);
+    insertRow("projects", ["COVER_IMG" ,"TITLE", "FULL_DES", "ATTACH"], [$cover_pic_name, $simple_des, $full_des, $file_link_name], $cover_pic, $all_pics, $file_link);
+    
+    $project_id = mysqli_query($connect, "SELECT ID FROM projects ORDER BY ID DESC LIMIT 1");
+    $row = mysqli_fetch_assoc($project_id);
+
+   for($i = 0; $i < count($all_pics_names); $i++){
+       insertRow("projects_img", ["PROJECT_ID", "IMG"], [$row['ID'], $all_pics_names[$i]], '', $all_pics, '');
+   }
+
+
 }
 ?>
 <script>
@@ -661,25 +669,26 @@ if (isset($_POST['project_send'])) {
                         ?>
                             <tr>
                                 <td style=" padding: 10px;"><?php echo $id_num++ ?></td>
-                                <td style=" padding: 10px;"><?php echo $row['COVER_PIC_NAME'] ?></td>
-                                <td style=" padding: 10px;"><?php echo $row['SIMPLE_DES'] ?></td>
+                                <td style=" padding: 10px;"><?php echo $row['COVER_IMG'] ?></td>
+                                <td style=" padding: 10px;"><?php echo $row['TITLE'] ?></td>
                                 <td style=" padding: 10px;">
                                     <?php
-                                        $pics_arr = unserialize($row['ALL_PICS_NAMES']);
-                                        $namesOfImgs = '';
-                                        foreach($pics_arr as $imgs_name){
-                                            $namesOfImgs .= '<span style="background-color: yellow; border-radius: 3px; padding: 3px">' . $imgs_name . '</span>___';
-                                        }
-                                        echo substr($namesOfImgs, 0, -3);    
+                                        $sql_img = 'SELECT * FROM projects_img';
+                                        $result_img = mysqli_query($connect, $sql_img);
+                                        if(isset($result_img)){
+                                            while($row_img = mysqli_fetch_assoc($result_img)){
+                                                echo '<span><img style="width:40px; margin: 3px" src="../dashbord_admin/assets/projects_files/' . $row_img['IMG'] . '" /></span>';
+                                            }
+                                        }      
                                     ?>
                                 </td>
                                 <td style=" padding: 10px;"><?php echo $row['FULL_DES'] ?></td>
-                                <td style=" padding: 10px;"><?php echo $row['FILE_LINK'] ?></td>
+                                <td style=" padding: 10px;"><?php echo $row['ATTACH'] ?></td>
                                 <td style=" padding: 10px;">
                                     <form action="./projects.php" method="POST">
-                                        <input type="submit" name="del" value="Delete" class="btn btn-danger">
+                                        <input type="submit" name="delete_project" value="Delete" class="btn btn-danger">
                                         <!-- <input type="hidden" name="del_file_hidden" value="<?php // echo $row['FILE_LINK'] ?>"> -->
-                                        <input type="hidden" name="id" value="<?php echo $row['NUM'] ?>">
+                                        <input type="hidden" name="id" value="<?php echo $row['ID'] ?>">
                                         <button type="submit" style="margin-left: 15px;" name="edit_proj_btn" id="edit_proj_btn" class="btn btn-primary">Edit</button>
                                     </form>
                                 </td>
@@ -697,6 +706,13 @@ if (isset($_POST['project_send'])) {
 </div>                                     
 <!-- /. ROW  -->
 
+<?php
+    $delete_project = $_POST['delete_project'];
+    if(isset($delete_project)){
+        $id = $_POST['id'];
+        deleteRow("projects", $id, '');
+    }
+?>
 
 <!-- /////////////////////////////////////////////////////////////////// -->
 <!-- ////////////////////////////////  فورم التعديل  ////////////////// -->
@@ -705,7 +721,7 @@ if (isset($_POST['project_send'])) {
     $edit_proj_btn = $_POST['edit_proj_btn'];
     if(isset($edit_proj_btn)){
         $id = $_POST['id'];
-        $sql_update = 'SELECT * FROM projects WHERE NUM = ' . $id;
+        $sql_update = 'SELECT * FROM projects WHERE ID = ' . $id;
         $result = mysqli_query($connect, $sql_update);
         if(isset($result)){
             while($row = mysqli_fetch_assoc($result)){
@@ -763,7 +779,7 @@ if (isset($_POST['project_send'])) {
                             <input type="file" class="form-control" name="new_file_link" id="new_file_link">
                             <input type="hidden" name="old_file_link" value="<?php echo $row['FILE_LINK'] ?>">
                         </div>
-                        <input type="hidden" name="id" value="<?php echo $row['NUM'] ?>">
+                        <input type="hidden" name="id" value="<?php echo $row['ID'] ?>">
                         <button type="submit" class="btn btn-primary" name="proj_update_btn">Update</button>
                         <button class="btn btn-primary" style="margin-left: 10px;">Cancel</button>
                     </form>
@@ -796,7 +812,7 @@ if (isset($_POST['project_send'])) {
         $new_all_pics_files = $_FILES['new_all_pics'];
 
         if (!empty($_FILES['new_all_pics']['name'][0])) {
-            $sql_qq = 'SELECT ALL_PICS_NAMES FROM projects WHERE NUM = ' . $id;
+            $sql_qq = 'SELECT ALL_PICS_NAMES FROM projects WHERE ID = ' . $id;
             $result_qq = mysqli_query($connect, $sql_qq);
             if(isset($result_qq)){
                 while($row_qq = mysqli_fetch_assoc($result_qq)){
@@ -807,7 +823,7 @@ if (isset($_POST['project_send'])) {
                 $new_all_pics = serialize($new_all_pics_arr);
             }
         } else {
-            $sql_qq = 'SELECT ALL_PICS_NAMES FROM projects WHERE NUM = ' . $id;
+            $sql_qq = 'SELECT ALL_PICS_NAMES FROM projects WHERE ID = ' . $id;
             $result_qq = mysqli_query($connect, $sql_qq);
             if(isset($result_qq)){
                 while($row_qq = mysqli_fetch_assoc($result_qq)){
