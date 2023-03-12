@@ -128,11 +128,14 @@ function updateRow($table, $data, $new_cover_pic, $new_all_pics_files, $new_file
 
 <?php
     // delete function
-    function deleteRow($table, $row_id, $file_name) {
+    function deleteRow($table, $row_id, $pro_imgs) {
         include('./conn.php');
         $query = "DELETE FROM " . $table . " WHERE ID = " . $row_id;
         if (mysqli_query($connect, $query)) {
-            unlink("./assets/projects_files/" . $file_name)
+            $pro_imgs_to_arr = json_decode($pro_imgs);
+            for($i = 0; $i < count($pro_imgs_to_arr); $i++){
+                unlink("./assets/projects_files/" . $pro_imgs_to_arr[$i]);
+            }
             ?>
                 <script>
                     var pop_alert = document.getElementById("pop_alert");
@@ -666,6 +669,7 @@ if (isset($_POST['project_send'])) {
                             $id_num = 1;
                             if(isset($result)){
                                 while($row = mysqli_fetch_assoc($result)){
+                                    $proId = $row['ID'];
                         ?>
                             <tr>
                                 <td style=" padding: 10px;"><?php echo $id_num++ ?></td>
@@ -673,12 +677,18 @@ if (isset($_POST['project_send'])) {
                                 <td style=" padding: 10px;"><?php echo $row['TITLE'] ?></td>
                                 <td style=" padding: 10px;">
                                     <?php
-                                        $sql_img = 'SELECT * FROM projects_img';
+                                        $sql_img = 'SELECT * FROM projects_img WHERE PROJECT_ID = ' . $proId;
                                         $result_img = mysqli_query($connect, $sql_img);
                                         if(isset($result_img)){
+                                            $imgs_array = array();
+                                            $imgs_ids = array();
                                             while($row_img = mysqli_fetch_assoc($result_img)){
                                                 echo '<span><img style="width:40px; margin: 3px" src="../dashbord_admin/assets/projects_files/' . $row_img['IMG'] . '" /></span>';
+                                                array_push($imgs_array, $row_img['IMG']);
+                                                array_push($imgs_ids, $row_img['ID']);
                                             }
+                                            $imgs_arr_to_text = json_encode($imgs_array);
+                                            $imgs_ids_to_text = json_encode($imgs_ids);
                                         }      
                                     ?>
                                 </td>
@@ -687,7 +697,8 @@ if (isset($_POST['project_send'])) {
                                 <td style=" padding: 10px;">
                                     <form action="./projects.php" method="POST">
                                         <input type="submit" name="delete_project" value="Delete" class="btn btn-danger">
-                                        <!-- <input type="hidden" name="del_file_hidden" value="<?php // echo $row['FILE_LINK'] ?>"> -->
+                                        <input type="hidden" name="del_pro_imgs" value="<?php echo htmlspecialchars($imgs_arr_to_text); ?>">
+                                        <input type="hidden" name="pro_imgs_ids" value="<?php echo htmlspecialchars($imgs_ids_to_text); ?>">
                                         <input type="hidden" name="id" value="<?php echo $row['ID'] ?>">
                                         <button type="submit" style="margin-left: 15px;" name="edit_proj_btn" id="edit_proj_btn" class="btn btn-primary">Edit</button>
                                     </form>
@@ -710,7 +721,8 @@ if (isset($_POST['project_send'])) {
     $delete_project = $_POST['delete_project'];
     if(isset($delete_project)){
         $id = $_POST['id'];
-        deleteRow("projects", $id, '');
+        $del_pro_imgs = $_POST['del_pro_imgs'];
+        deleteRow("projects", $id, $del_pro_imgs);
     }
 ?>
 
@@ -721,6 +733,7 @@ if (isset($_POST['project_send'])) {
     $edit_proj_btn = $_POST['edit_proj_btn'];
     if(isset($edit_proj_btn)){
         $id = $_POST['id'];
+        $pro_imgs_ids = $_POST['pro_imgs_ids'];
         $sql_update = 'SELECT * FROM projects WHERE ID = ' . $id;
         $result = mysqli_query($connect, $sql_update);
         if(isset($result)){
@@ -737,47 +750,56 @@ if (isset($_POST['project_send'])) {
                     <form action="./projects.php" method="POST" enctype="multipart/form-data" id="editForm">
                         <div class="form-group">
                             <label for="">project cover photo</label><br />
-                            <label for="">The old file was: <?php echo $row['COVER_PIC_NAME']; ?></label><br />
+                            <label for="">The old file was: <?php echo $row['COVER_IMG']; ?></label><br />
                             <label for="">choose new file</label>
-                            <input type="file" class="form-control" name="new_cover_pic" id="new_cover_pic"/>                            
-                            <input type="hidden" name="old_cover_pic" value="<?php echo $row['COVER_PIC_NAME']; ?>">
+                            <input type="file" class="form-control" name="cover_pic" id="cover_pic"/>                            
+                            <input type="hidden" name="old_cover_pic" value="<?php echo $row['COVER_IMG']; ?>">
                         </div>
                         <div class="form-group">
                             <label for="">Write new simple description for the project</label>
-                            <input type="text" class="form-control" name="new_simple_des" value="<?php echo $row['SIMPLE_DES']; ?>">
+                            <input type="text" class="form-control" name="title" value="<?php echo $row['TITLE']; ?>">
                         </div>
                         <div class="form-group">
+                            <label for="">Select this box to show modify prject images</label>
+                            <input type="checkbox" class="form-control" id="select_box">
+                        </div>
+                        <div class="form-group" id="div_to_hide">
                             <label for="">project images</label><br />
                             <label for="">This is old files, check images that you want to delete it: </label><br />
-
+                            <div class="parent-custom" style="align-items: flex-end; justify-content: center;">
                             <?php 
-                                $imageNames = unserialize($row['ALL_PICS_NAMES']);
-                                echo '<div class="parent-custom" style="align-items: flex-end; justify-content: center;">';
-                                foreach ($imageNames as $index => $imageName) {
-                                    // Generate the img element
-                                    $img = '<img style="width: 60px" src="./assets/projects_files/' . $imageName . '">';
-                                    // Generate the input element
-                                    $box_name = "delete_" . $index;
-                                    $input = '<input type="checkbox" name="' . $box_name . '" value="' . $index . '">';
-                                    // Output the img and input elements
-                                    echo '<div style="margin: 0 10px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 1rem">' . $img . $input . '</div>';
-                                }
-                                echo '</div>';
+                                $imgs_ids_to_arr = json_decode($pro_imgs_ids);
+                                $img_index = 0;
+                                $sql_img = 'SELECT * FROM projects_img WHERE PROJECT_ID = ' . $id;
+                                $result_img = mysqli_query($connect, $sql_img);
+                                if(isset($result_img)){
+                                    while($row_img = mysqli_fetch_assoc($result_img)){
+                                        // Generate the img element
+                                        $img = '<img style="width: 60px" src="./assets/projects_files/' . $row_img['IMG'] . '">';
+                                        // Generate the input element
+                                        $box_name = "delete_" . $imgs_ids_to_arr[$img_index];
+                                        $input = '<input type="checkbox" name="' . $box_name . '" value="' . $imgs_ids_to_arr[$img_index] . '">';
+                                        $img_index++;
+                                        // Output the img and input elements
+                                        echo '<div style="margin: 0 10px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 1rem">' . $img . $input . '</div>';
+                                    }
+                                }      
+                                
                             ?>
+                            </div>
                             <label for="">or choose new files</label>
                             <input type="file" class="form-control" name="new_all_pics[]" multiple/>                            
-                            <!-- <input type="hidden" name="old_all_pics" value="<?php // echo $row['ALL_PICS_NAMES'] ?>"> -->
                         </div>
                         <div class="form-group">
                             <label for="">Write new full project description. (You can use brackets, dashes, and underscores, and to make text bold, put it in double brackets)</label>
                             <textarea style="height: 100px;" class="form-control" name="new_full_des"><?php echo $row['FULL_DES'] ?></textarea>
                         </div>
                         <div class="form-group">
-                            <label for="">The old file was: <?php echo $row['FILE_LINK'] ?></label><br />
+                            <label for="">The old file was: <?php echo $row['ATTACH'] ?></label><br />
                             <label for="">Check this box if you want to delete it <input type="checkbox" name="checkbox_to_del" id="checkbox_to_del"></label><br />
                             <label for="">Or choose new file</label>
                             <input type="file" class="form-control" name="new_file_link" id="new_file_link">
-                            <input type="hidden" name="old_file_link" value="<?php echo $row['FILE_LINK'] ?>">
+                            <input type="hidden" name="old_file_link" value="<?php echo $row['ATTACH'] ?>">
                         </div>
                         <input type="hidden" name="id" value="<?php echo $row['ID'] ?>">
                         <button type="submit" class="btn btn-primary" name="proj_update_btn">Update</button>
@@ -867,8 +889,8 @@ if (isset($_POST['project_send'])) {
         if(strpos($new_file_name, "'") >= 0){
             $errore_msg = "File name contains quotes";
         }
-        updateRow("projects", ["COVER_PIC_NAME" => $new_cover_pic_name, "SIMPLE_DES" => $new_simple_des, "ALL_PICS_NAMES" => $new_all_pics, "FULL_DES" => $new_full_des, "FILE_LINK" => $new_file_name], $new_cover_pic, $new_all_pics_files, $new_file_link, $id,$errore_msg);
-        // insertRow("projects", ["COVER_PIC_NAME" ,"SIMPLE_DES", "ALL_PICS_NAMES", "FULL_DES", "FILE_LINK"], [$cover_pic_name, $simple_des, $all_pics_names, $full_des, $file_link_name], $cover_pic, $all_pics, $file_link);
+        updateRow("projects", ["COVER_IMG" => $new_cover_pic_name, "TITLE" => $new_simple_des, "ALL_PICS_NAMES" => $new_all_pics, "FULL_DES" => $new_full_des, "FILE_LINK" => $new_file_name], $new_cover_pic, $new_all_pics_files, $new_file_link, $id,$errore_msg);
+        // insertRow("projects", ["COVER_IMG" ,"TITLE", "ALL_PICS_NAMES", "FULL_DES", "FILE_LINK"], [$cover_pic_name, $simple_des, $all_pics_names, $full_des, $file_link_name], $cover_pic, $all_pics, $file_link);
 
     }
 ?>
