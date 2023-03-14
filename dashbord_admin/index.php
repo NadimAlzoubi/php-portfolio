@@ -760,43 +760,52 @@ Website: http://www.webthemez.com/
                                 <div class="table-responsive">
                                     <table class="table table-striped table-bordered table-hover" id="dataTables-example">
                                         <thead>
-                                            <tr>
-                                                <th>Rendering engine</th>
-                                                <th>Browser</th>
-                                                <th>Platform(s)</th>
-                                                <th>Engine version</th>
-                                                <th>CSS grade</th>
-                                            </tr>
+                                        <tr>
+                                            <th style="width: 1%;">No.</th>
+                                            <th>Cover pic</th>
+                                            <th>Title</th>
+                                            <th>All pics</th>
+                                            <th>Descriotion</th>
+                                            <th>Attachment</th>
+                                        </tr>
                                         </thead>
                                         <tbody>
-                                            <tr class="odd gradeX">
-                                                <td>Trident</td>
-                                                <td>Internet Explorer 4.0</td>
-                                                <td>Win 95+</td>
-                                                <td class="center">4</td>
-                                                <td class="center">X</td>
+                                        <?php
+                                            $sql_s = 'SELECT * FROM projects';
+                                            $result = mysqli_query($connect, $sql_s);
+                                            $id_num = 1;
+                                            if(isset($result)){
+                                                while($row = mysqli_fetch_assoc($result)){
+                                                    $proId = $row['ID'];
+                                        ?>
+                                            <tr>
+                                                <td style=" padding: 10px;"><?php echo $id_num++ ?></td>
+                                                <td style=" padding: 10px;"><?php echo $row['COVER_IMG'] ?></td>
+                                                <td style=" padding: 10px;"><?php echo $row['TITLE'] ?></td>
+                                                <td style=" padding: 10px;">
+                                                    <?php
+                                                        $sql_img = 'SELECT * FROM projects_img WHERE PROJECT_ID = ' . $proId;
+                                                        $result_img = mysqli_query($connect, $sql_img);
+                                                        if(isset($result_img)){
+                                                            $imgs_array = array();
+                                                            $imgs_ids = array();
+                                                            while($row_img = mysqli_fetch_assoc($result_img)){
+                                                                echo '<span><img style="width:40px; margin: 3px" src="../dashbord_admin/assets/projects_files/' . $row_img['IMG'] . '" /></span>';
+                                                                array_push($imgs_array, $row_img['IMG']);
+                                                                array_push($imgs_ids, $row_img['ID']);
+                                                            }
+                                                            $imgs_arr_to_text = json_encode($imgs_array);
+                                                            $imgs_ids_to_text = json_encode($imgs_ids);
+                                                        }      
+                                                    ?>
+                                                </td>
+                                                <td style=" padding: 10px;"><?php echo $row['FULL_DES'] ?></td>
+                                                <td style=" padding: 10px;"><?php echo $row['ATTACH'] ?></td>
                                             </tr>
-                                            <tr class="even gradeC">
-                                                <td>Trident</td>
-                                                <td>Internet Explorer 5.0</td>
-                                                <td>Win 95+</td>
-                                                <td class="center">5</td>
-                                                <td class="center">C</td>
-                                            </tr>
-                                            <tr class="odd gradeA">
-                                                <td>Trident</td>
-                                                <td>Internet Explorer 5.5</td>
-                                                <td>Win 95+</td>
-                                                <td class="center">5.5</td>
-                                                <td class="center">A</td>
-                                            </tr>
-                                            <tr class="even gradeA">
-                                                <td>Trident</td>
-                                                <td>Internet Explorer 6</td>
-                                                <td>Win 98+</td>
-                                                <td class="center">6</td>
-                                                <td class="center">A</td>
-                                            </tr>
+                                            <?php
+                                                    }
+                                                }
+                                            ?>
                                         </tbody>
                                     </table>
                                 </div>

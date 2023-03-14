@@ -128,10 +128,12 @@ function updateRow($table, $data, $new_cover_pic, $new_all_pics_files, $new_file
 
 <?php
     // delete function
-    function deleteRow($table, $row_id, $pro_imgs) {
+    function deleteRow($table, $row_id, $pro_imgs, $old_attach, $old_cover) {
         include('./conn.php');
         $query = "DELETE FROM " . $table . " WHERE ID = " . $row_id;
         if (mysqli_query($connect, $query)) {
+            unlink("./assets/projects_files/" . $old_attach);
+            unlink("./assets/projects_files/" . $old_cover);
             $pro_imgs_to_arr = json_decode($pro_imgs);
             for($i = 0; $i < count($pro_imgs_to_arr); $i++){
                 unlink("./assets/projects_files/" . $pro_imgs_to_arr[$i]);
@@ -699,6 +701,8 @@ if (isset($_POST['project_send'])) {
                                         <input type="submit" name="delete_project" value="Delete" class="btn btn-danger">
                                         <input type="hidden" name="del_pro_imgs" value="<?php echo htmlspecialchars($imgs_arr_to_text); ?>">
                                         <input type="hidden" name="pro_imgs_ids" value="<?php echo htmlspecialchars($imgs_ids_to_text); ?>">
+                                        <input type="hidden" name="old_attach" value="<?php echo $row['ATTACH'] ?>">
+                                        <input type="hidden" name="old_cover" value="<?php echo $row['COVER_IMG'] ?>">
                                         <input type="hidden" name="id" value="<?php echo $row['ID'] ?>">
                                         <button type="submit" style="margin-left: 15px;" name="edit_proj_btn" id="edit_proj_btn" class="btn btn-primary">Edit</button>
                                     </form>
@@ -721,8 +725,10 @@ if (isset($_POST['project_send'])) {
     $delete_project = $_POST['delete_project'];
     if(isset($delete_project)){
         $id = $_POST['id'];
+        $old_attach = $_POST['old_attach'];
+        $old_cover = $_POST['old_cover'];
         $del_pro_imgs = $_POST['del_pro_imgs'];
-        deleteRow("projects", $id, $del_pro_imgs);
+        deleteRow("projects", $id, $del_pro_imgs, $old_attach, $old_cover);
     }
 ?>
 
@@ -872,6 +878,7 @@ if (isset($_POST['project_send'])) {
         $cover_pic = $_FILES['cover_pic'];
         if(!empty($_FILES['cover_pic']['name'])){
             $new_cover_pic_name = $_FILES['cover_pic']['name'];
+            unlink("./assets/projects_files/" . $_POST['old_cover_pic']);
         } else {
             $new_cover_pic_name = $_POST['old_cover_pic'];
         }
@@ -891,7 +898,7 @@ if (isset($_POST['project_send'])) {
                         while($row_img = mysqli_fetch_assoc($result_img)){
                             // The checkbox was checked
                             unlink("./assets/projects_files/" . $row_img['IMG']);
-                            deleteRow("projects_img", $imgs_ids_arr[$i], null);
+                            deleteRow("projects_img", $imgs_ids_arr[$i], null, null, null);
                         }
                     }
                 }
