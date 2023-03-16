@@ -111,7 +111,7 @@ h1, h2, h3, h4, h5, h6, p{
     font-weight: 800;
 }
 .container{
-    width: 90vw;
+    width: 93vw;
     margin: 0 auto;
 }
 
@@ -126,12 +126,12 @@ h1, h2, h3, h4, h5, h6, p{
 
 @media screen and (min-width: 992px){
     .container{
-        width: 88vw;
+        width: 93vw;
     }
 }
 @media screen and (min-width: 1200px){
     .container{
-        width: 85vw;
+        width: 93vw;
     }
 }
 

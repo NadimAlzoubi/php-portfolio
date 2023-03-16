@@ -1,4 +1,7 @@
 <!DOCTYPE html>
+<?php
+     include('./dashbord_admin/conn.php');
+?>
 <html>
   <head>
     <meta charset="utf-8">
@@ -144,24 +147,119 @@
   object-fit: cover;
   border-radius: 5px;
 }
+.parent{
+  margin-bottom: 4rem;
+}
+.proForm{
+  position: relative !important;
+  border-radius: 5px !important;
+  transition: all 0.2s !important;
+
+} 
+.proTitle{
+  transition: all 0.2s !important;
+  width: max-content;
+}
+.proForm:hover + p{
+  transform: translateX(4rem);
+  font-weight: 900;
+  color: #287bff;
+}
+.proForm::before{
+  content: '' !important;
+  position: absolute !important;
+  width: 100% !important;
+  height: 100% !important;
+  background-color: #111111d9 !important;
+  border-radius: 5px !important;
+  transition: all 0.2s !important;
+  opacity: 0 !important;
+} 
+.proForm.op{
+  transform: translateY(-4px) !important;
+}
+.proForm.op::before{
+  opacity: 1 !important;
+}
+.proForm.op .btnmo{
+  opacity: 1 !important;
+}
+.proForm .btnmo{
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  outline: none !important;
+    background-color: #11111100 !important;
+    color: #fff !important;
+    padding: 0.4rem !important;
+    width: 5rem !important;
+    border-radius: 5px !important;
+    border: 1px solid !important;
+    opacity: 0 !important;
+}
+.btnmo:hover{
+  background-color: #0866C6 !important;
+  transition: all 0.2s !important;
+  cursor: pointer !important;
+}
+
 </style>
 
-  <div class="parent">
-    <form action="">
-      <img src="./assets/1.png" alt="">
-      <p>project 1</p>
+  <center id="no-project" style="font-size: x-large; box-shadow: 0px 3px 12px 5px #f5f5f512; padding: 1rem; width: fit-content; border-radius: 6px; margin: 0 auto">
+  There are no projects currently
+  </center>
+
+  <div class="parent" id="parentDiv">
+    <?php
+      $sql_s = 'SELECT * FROM projects';
+      $result = mysqli_query($connect, $sql_s);
+      if(isset($result)){
+          while($row = mysqli_fetch_assoc($result)){
+              $proId = $row['ID'];
+    ?>
+    <form action="./project-details.php" method="POST">
+      <div class="proForm">
+        <img src="./dashbord_admin/assets/projects_files/<?php echo $row['COVER_IMG']; ?>">
+        <input type="hidden" name="project_id" value="<?php echo $row['ID']; ?>">
+        <input type="hidden" name="attach" value="<?php echo $row['ATTACH']; ?>">
+        <input type="hidden" name="title" value="<?php echo $row['TITLE']; ?>">
+        <input type="hidden" name="full_des" value="<?php echo $row['FULL_DES']; ?>">
+        <button class="btnmo" type="submit" name="view">View</button>
+      </div>
+      <p class="proTitle"><?php echo $row['TITLE']; ?></pc>
     </form>
-    <form action=""><img src="./assets/2.png" alt=""></form>
-    <form action=""><img src="./assets/3.png" alt=""></form>
-    <form action=""><img src="./assets/4.png" alt=""></form>
-    <form action=""><img src="./assets/deg1.png" alt=""></form>
-    <form action=""><img src="./assets/24.png" alt=""></form>
-    <form action=""><img src="./assets/deg2.png" alt=""></form>
+    <?php
+        }
+      }
+    ?>
 </div>
 
 
 
+<script>
+  let parentDiv = document.getElementById('parentDiv');
+  let noProject = document.getElementById('no-project');
+  let proForm = document.querySelectorAll('.proForm').forEach(function(e) {
+  // Do something with each element
+  e.onmouseover = () => {
+    e.classList.add('op');
+  }
+  e.onmouseout = () => {
+    e.classList.remove('op');
+  }
+  });
 
+
+  
+
+
+  if (parentDiv.innerHTML.length > 5) {
+    noProject.style.display = 'none';
+  }
+  
+ 
+</script>
 
 
 
@@ -383,39 +481,6 @@
 
 
 
-
-<?php
-      // error_reporting(0);
-      /////////////////////////////////////////
-      // $host = 'localhost';
-      // $user = 'id19258540_root';
-      // $pass = '_)<A/>af%Z_7*i%k';
-      // $db = 'id19258540_nadim_db';
-      // $connect = mysqli_connect($host, $user, $pass, $db) or die("cannot connect");
-    /////////////////////////////////////////
-      /////////////////////////////////////////
-      include('./dashbord_admin/conn.php');
-      /////////////////////////////////////////
-    $sql_s = 'SELECT * FROM projects';
-      $result = mysqli_query($connect, $sql_s);
-    
-      if(isset($result)){
-        $counter = 1;
-        while($row = mysqli_fetch_assoc($result)){
-?>
-<br />
-<br />
-<h3><?php echo $counter++ ?>) <?php echo $row['TITLE'] ?>.</h3>
-      <p class="text" style="text-align: left; margin-left: 0; width: 100%;">
-        <?php echo '- ' . $row['PRO_DES'] ?>
-      </p>
-      <div id="imgdiv">
-        <img src="<?php echo $row['FILE_LINK'] ?>" alt="" style="width: 100%">
-      </div>
-<?php
-      }
-    }
-?>
 
 
 

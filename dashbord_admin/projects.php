@@ -567,7 +567,7 @@ function updateRow($table, $data, $new_cover_pic, $new_all_pics_files, $new_file
                             <input id="allFiles" type="file" class="form-control" name="all_pics[]" multiple>
                         </div>
                         <div class="sub-title">
-                        Write a full project description. (You can use brackets, dashes, and underscores, and to make text bold, put it in double brackets)
+                        Write a full project description. (You can use the <code>&lt;h2&gt; &lt;/h2&gt;</code> tag to create a heading or the <code>&lt;b&gt; &lt;/b&gt;</code> tag to create bold text.)
                         </div>
                         <div class="form-group">
                             <textarea id="textarea" onkeydown="handleKeyDown(event)" class="form-control" rows="4" name="full_des"></textarea>
@@ -601,15 +601,13 @@ if (isset($_POST['project_send'])) {
     $file_link = $_FILES['file_link'];
     $file_link_name = $file_link['name'];
     insertRow("projects", ["COVER_IMG" ,"TITLE", "FULL_DES", "ATTACH"], [$cover_pic_name, $simple_des, $full_des, $file_link_name], $cover_pic, $all_pics, $file_link);
-    
     $project_id = mysqli_query($connect, "SELECT ID FROM projects ORDER BY ID DESC LIMIT 1");
     $row = mysqli_fetch_assoc($project_id);
-
-   for($i = 0; $i < count($all_pics_names); $i++){
-       insertRow("projects_img", ["PROJECT_ID", "IMG"], [$row['ID'], $all_pics_names[$i]], '', $all_pics, '');
-   }
-
-
+    if(!empty($all_pics['name'][0])){
+        for($i = 0; $i < count($all_pics_names); $i++){
+            insertRow("projects_img", ["PROJECT_ID", "IMG"], [$row['ID'], $all_pics_names[$i]], '', $all_pics, '');
+        }
+    }
 }
 ?>
 <script>
@@ -685,7 +683,7 @@ if (isset($_POST['project_send'])) {
                                             $imgs_array = array();
                                             $imgs_ids = array();
                                             while($row_img = mysqli_fetch_assoc($result_img)){
-                                                echo '<span><img style="width:40px; margin: 3px" src="../dashbord_admin/assets/projects_files/' . $row_img['IMG'] . '" /></span>';
+                                                echo '<span>' . $row_img['IMG'] . '</span> ';
                                                 array_push($imgs_array, $row_img['IMG']);
                                                 array_push($imgs_ids, $row_img['ID']);
                                             }
@@ -866,11 +864,6 @@ if (isset($_POST['project_send'])) {
         }
     }
 </script>
-
-
-
-
-
 <?php
     $pro_update_btn = $_POST['pro_update_btn'];
     if(isset($pro_update_btn)){
@@ -904,7 +897,7 @@ if (isset($_POST['project_send'])) {
                 }
             }
         }
-        $new_full_des = nl2br($_POST['new_full_des']);
+        $new_full_des = nl2br(str_replace("<br />", "", $_POST['new_full_des']));
 
         $new_file_link = $_FILES['new_file_link'];
         $old_file_link = $_POST['old_file_link'];
