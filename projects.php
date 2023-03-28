@@ -146,63 +146,63 @@
   aspect-ratio: 16/10;
   object-fit: cover;
   border-radius: 5px;
-}
-.parent{
-  margin-bottom: 4rem;
-}
-.proForm{
-  position: relative !important;
-  border-radius: 5px !important;
-  transition: all 0.2s !important;
-
-} 
-.proTitle{
-  transition: all 0.2s !important;
-  width: max-content;
-}
-.proForm:hover + p{
-  transform: translateX(4rem);
-  font-weight: 900;
-  color: #287bff;
-}
-.proForm::before{
-  content: '' !important;
-  position: absolute !important;
-  width: 100% !important;
-  height: 100% !important;
-  background-color: #111111d9 !important;
-  border-radius: 5px !important;
-  transition: all 0.2s !important;
-  opacity: 0 !important;
-} 
-.proForm.op{
-  transform: translateY(-4px) !important;
-}
-.proForm.op::before{
-  opacity: 1 !important;
-}
-.proForm.op .btnmo{
-  opacity: 1 !important;
-}
-.proForm .btnmo{
-  position: absolute !important;
-  top: 50% !important;
-  left: 50% !important;
-  transform: translate(-50%, -50%) !important;
-  outline: none !important;
-    background-color: #11111100 !important;
-    color: #fff !important;
-    padding: 0.4rem !important;
-    width: 5rem !important;
+  }
+  .parent{
+    margin-bottom: 4rem;
+  }
+  .proForm{
+    position: relative !important;
     border-radius: 5px !important;
-    border: 1px solid !important;
+    transition: all 0.2s !important;
+
+  } 
+  .proTitle{
+    transition: all 0.2s !important;
+    width: max-content;
+  }
+  .proForm:hover + p{
+    transform: translateX(4rem);
+    font-weight: 900;
+    color: #287bff;
+  }
+  .proForm::before{
+    content: '' !important;
+    position: absolute !important;
+    width: 100% !important;
+    height: 100% !important;
+    background-color: #111111d9 !important;
+    border-radius: 5px !important;
+    transition: all 0.2s !important;
     opacity: 0 !important;
-}
-.btnmo:hover{
-  background-color: #0866C6 !important;
-  transition: all 0.2s !important;
-  cursor: pointer !important;
-}
+  } 
+  .proForm.op{
+    transform: translateY(-4px) !important;
+  }
+  .proForm.op::before{
+    opacity: 1 !important;
+  }
+  .proForm.op .btnmo{
+    opacity: 1 !important;
+  }
+  .proForm .btnmo{
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    outline: none !important;
+      background-color: #11111100 !important;
+      color: #fff !important;
+      padding: 0.4rem !important;
+      width: 5rem !important;
+      border-radius: 5px !important;
+      border: 1px solid !important;
+      opacity: 0 !important;
+  }
+  .btnmo:hover{
+    background-color: #0866C6 !important;
+    transition: all 0.2s !important;
+    cursor: pointer !important;
+  }
 
 </style>
 
@@ -218,21 +218,18 @@
           while($row = mysqli_fetch_assoc($result)){
               $proId = $row['ID'];
     ?>
-    <form action="./project-details.php" method="POST">
+    <form action="./project-details.php" method="GET">
       <div class="proForm">
         <img src="./dashbord_admin/assets/projects_files/<?php echo $row['COVER_IMG']; ?>">
-        <input type="hidden" name="project_id" value="<?php echo $row['ID']; ?>">
-        <input type="hidden" name="attach" value="<?php echo $row['ATTACH']; ?>">
-        <input type="hidden" name="title" value="<?php echo $row['TITLE']; ?>">
-        <input type="hidden" name="full_des" value="<?php echo $row['FULL_DES']; ?>">
-        <button class="btnmo" type="submit" name="view">View</button>
+        <input type="hidden" name="project_id" value="<?php echo base64_encode($row['ID']); ?>">
+        <button class="btnmo" type="submit">View</button>
       </div>
       <p class="proTitle"><?php echo $row['TITLE']; ?></pc>
     </form>
     <?php
         }
       }
-    ?>
+?>
 </div>
 
 

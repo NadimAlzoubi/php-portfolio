@@ -4,46 +4,52 @@
 ?>
 <?php
     // insert function
-    function insertRow($table, $columns, $values, $cover_pic, $all_pics, $file_link) {
+    function insertRow($table, $columns, $values, $cover_pic, $all_pics, $file_link, $errore_msg, $newFileName_cover_img_name) {
         include('./conn.php'); 
-        $columnString = implode(",", $columns);
-        $valueString = "'" . implode("','", $values) . "'";
-        $query = "INSERT INTO $table ($columnString) VALUES ($valueString)";
-        // Check if any cover file were uploaded
-        if (!empty($cover_pic['name'])) {
-            move_uploaded_file($cover_pic['tmp_name'], "./assets/projects_files/" . $cover_pic['name']);
-        }
-        // Check if any file were uploaded
-        if (!empty($file_link['name'])) {
-            move_uploaded_file($file_link['tmp_name'], "./assets/projects_files/" . $file_link['name']);
-        }
-        // Check if any files were uploaded
-        if (!empty($all_pics['name'][0])) {
-            // Loop through the uploaded files
-            for ($i = 0; $i < count($all_pics['name']); $i++) {
-                // Get the file name and temporary location
-                $pic_name = $all_pics['name'][$i];
-                $tmp_name = $all_pics['tmp_name'][$i];      
-                move_uploaded_file($tmp_name, "./assets/projects_files/" . $pic_name);
+        if($errore_msg == null){
+
+        
+            $columnString = implode(",", $columns);
+            $valueString = "'" . implode("','", $values) . "'";
+            $query = "INSERT INTO $table ($columnString) VALUES ($valueString)";
+            // Check if any cover file were uploaded
+            if (!empty($cover_pic['name'])) {
+                move_uploaded_file($cover_pic['tmp_name'], "./assets/projects_files/" . $newFileName_cover_img_name);
             }
-        }
-        if (mysqli_query($connect, $query)) {
-            ?>
-             <script>
-                    var pop_alert = document.getElementById("pop_alert");
-                    pop_alert.style.display = "flex";
-                    pop_alert.innerHTML = '<div class="custom-modal"><div class="succes succes-animation icon-top"><i class="fa fa-check"></i></div><div class="succes border-bottom"></div><div class="content"><p class="type">Alert</p><p class="message-type">Completed successfully</p><button onClick="window.location.href=window.location.href" id="alert_close_btn" class="btn btn-success" style="margin-bottom: 1rem;">Close</button></div></div>';
-                </script>
-            <?php
-        }else{
-            ?>
+            // Check if any file were uploaded
+            if (!empty($file_link['name'])) {
+                move_uploaded_file($file_link['tmp_name'], "./assets/projects_files/" . $file_link['name']);
+            }
+            // Check if any files were uploaded
+            if (!empty($all_pics['name'][0])) {
+                // Loop through the uploaded files
+                for ($i = 0; $i < count($all_pics['name']); $i++) {
+                    // Get the file name and temporary location
+                    $pic_name = $all_pics['name'][$i];
+                    $tmp_name = $all_pics['tmp_name'][$i];      
+                    move_uploaded_file($tmp_name, "./assets/projects_files/" . $pic_name);
+                }
+            }
+            if (mysqli_query($connect, $query)) {
+                ?>
                 <script>
-                    var pop_alert = document.getElementById("pop_alert");
-                    pop_alert.style.display = "flex";
-                    pop_alert.innerHTML = '<div class="custom-modal"><div class="danger danger-animation icon-top"><i class="fa fa-times"></i></div><div class="danger border-bottom"></div><div class="content"><p class="type">Alert</p><p class="message-type">A Problem Occurred<br /><span class="type"><?php echo ''; ?></span></p><button onClick="window.location.href=window.location.href" id="alert_close_btn" class="btn btn-danger" style="margin-bottom: 1rem;">Close</button></div></div>';
-                </script>
-            <?php
-        }
+                        var pop_alert = document.getElementById("pop_alert");
+                        pop_alert.style.display = "flex";
+                        pop_alert.innerHTML = '<div class="custom-modal"><div class="succes succes-animation icon-top"><i class="fa fa-check"></i></div><div class="succes border-bottom"></div><div class="content"><p class="type">Alert</p><p class="message-type">Completed successfully</p><button onClick="window.location.href=window.location.href" id="alert_close_btn" class="btn btn-success" style="margin-bottom: 1rem;">Close</button></div></div>';
+                    </script>
+                <?php
+            }
+            
+            
+        }else{
+                ?>
+                    <script>
+                        var pop_alert = document.getElementById("pop_alert");
+                        pop_alert.style.display = "flex";
+                        pop_alert.innerHTML = '<div class="custom-modal"><div class="danger danger-animation icon-top"><i class="fa fa-times"></i></div><div class="danger border-bottom"></div><div class="content"><p class="type">Alert</p><p class="message-type">A Problem Occurred<br /><span class="type"><?php echo $errore_msg; ?></span></p><button onClick="window.location.href=window.location.href" id="alert_close_btn" class="btn btn-danger" style="margin-bottom: 1rem;">Close</button></div></div>';
+                    </script>
+                <?php
+            }
     }
     // Example usage
     // insertRow("home", ["name", "age", "gender"], ["John", "20", "male"], '', '');
@@ -600,21 +606,57 @@ if (isset($_POST['project_send'])) {
     $all_pics_names = ($all_pics['name']);
     $file_link = $_FILES['file_link'];
     $file_link_name = $file_link['name'];
-    insertRow("projects", ["COVER_IMG" ,"TITLE", "FULL_DES", "ATTACH"], [$cover_pic_name, $simple_des, $full_des, $file_link_name], $cover_pic, $all_pics, $file_link);
+
+    
+    $allowed_extensions = array('jpg', 'png', 'jpeg');
+    $file_extension = pathinfo($cover_pic_name, PATHINFO_EXTENSION);
+
+    if(!empty($cover_pic_name )){
+        if(in_array($file_extension, $allowed_extensions)){
+            // get file extension
+            $extension = pathinfo($_FILES['cover_pic']['name'], PATHINFO_EXTENSION);
+            // create new file name with extension
+            $newFileName_cover_img_name = time() . '.' . $extension;
+            $errore_msg = null;
+        } else {
+            $errore_msg = "error: allowed extensions is (jpg, jpeg, png)";
+        }
+        
+    }
+
+    insertRow("projects", ["COVER_IMG" ,"TITLE", "FULL_DES", "ATTACH"], [$newFileName_cover_img_name, $simple_des, $full_des, $file_link_name], $cover_pic, $all_pics, $file_link, $errore_msg, $newFileName_cover_img_name);
     $project_id = mysqli_query($connect, "SELECT ID FROM projects ORDER BY ID DESC LIMIT 1");
     $row = mysqli_fetch_assoc($project_id);
     if(!empty($all_pics['name'][0])){
         for($i = 0; $i < count($all_pics_names); $i++){
-            insertRow("projects_img", ["PROJECT_ID", "IMG"], [$row['ID'], $all_pics_names[$i]], '', $all_pics, '');
+            insertRow("projects_img", ["PROJECT_ID", "IMG"], [$row['ID'], $all_pics_names[$i]], '', $all_pics, '', $errore_msg, '');
         }
     }
 }
 ?>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <script>
-    var kkk = document.getElementById("allFiles");
-    kkk.onchange = () => {
-        console.log(kkk);
-    }
+    // var kkk = document.getElementById("allFiles");
+    // kkk.onchange = () => {
+    //     console.log(kkk);
+    // }
     // <textarea id="textarea" onkeydown="handleKeyDown(event)"></textarea>
     //   function handleKeyDown(event) {
     //     // Check if the Enter key was pressed

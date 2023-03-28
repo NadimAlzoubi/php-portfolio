@@ -106,21 +106,28 @@
     <!-- home page -->
     <section class = "home container">
         <div class = "project-summry">
-            <h2><?php echo $_POST['title']; ?></h2>
+        <?php
+            $sql_s = 'SELECT * FROM projects WHERE ID = ' . base64_decode($_GET['project_id']);
+            $result = mysqli_query($connect, $sql_s);
+            if(isset($result)){
+                while($row = mysqli_fetch_assoc($result)){
+        ?>
+            <h2><?php echo $row['TITLE']; ?></h2>
             <h4>Descriotion</h4>
-            <p><?php echo $_POST['full_des']; ?></p>
+            <p><?php echo $row['FULL_DES']; ?></p>
             <?php
-                if(!$_POST['attach'] == null){
-                    echo '<h3>Attachment - <a href="' . $_POST['attach'] . '">Download</a></h3><br>';
+                if(!$row['ATTACH'] == null){
+                    echo '<h3>Attachment - <a href="' . $row['ATTACH'] . '">Download</a></h3><br>';
                 }
+            ?>
+            <?php
+            }
+        }
             ?>
         </div>
         <div class = "project-imgs">
-            <?php
-                if(isset($_POST['view'])){
-                    $project_id = $_POST['project_id'];
-                }
-                $query = "SELECT * FROM projects_img WHERE PROJECT_ID = " . $project_id;
+            <?php               
+                $query = "SELECT * FROM projects_img WHERE PROJECT_ID = " . base64_decode($_GET['project_id']);
                 $result = mysqli_query($connect, $query);
                 if(isset($result)){
                     while($row = mysqli_fetch_assoc($result)){
