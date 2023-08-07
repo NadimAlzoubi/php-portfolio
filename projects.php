@@ -143,7 +143,7 @@
       ?>
          <div>
            <div class="proForm">
-             <img src="./assets/<?php echo $project['COVER_IMG']; ?>">
+             <img src="./assets/<?php echo $project['COVER_IMG']; ?>" alt="<?php echo $project['COVER_IMG']; ?>" />
              <input type="hidden" name="project_id" value="<?php echo base64_encode($project['PROJECT_ID']); ?>">
              <a href="./project-details.php?id=<?php echo base64_encode($project['PROJECT_ID']); ?>" style="text-align: center" class="btnmo">View</a>
            </div>

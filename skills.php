@@ -3,7 +3,6 @@
   include('./includes/functions.php');
   include('./includes/header.php');
 ?>
-    <!-- skills page -->
   <section class="skills container">
     <div class="title">
       <h2>skills</h2>
@@ -11,12 +10,10 @@
         <h2>my skills</h2>
       </div>
     </div>
-<!-- <p class="text"><?php //echo getAboutDate('COVER_IMG_NAME', 'about'); ?></p> -->
 
 <?php 
 $skills = getSkillsData();
 $renderedCategories = array();
-
 foreach ($skills as $item) {
     if (!in_array($item['CATEGORY'], $renderedCategories)) {
         $renderedCategories[] = $item['CATEGORY'];
@@ -47,14 +44,7 @@ foreach ($skills as $item) {
     }
 }
 ?>
-  
-  
-
-
-
-
 </section>
-      <!-- end of skills page -->
 <?php
   include('./includes/footer.php');
 ?>

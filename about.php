@@ -12,7 +12,7 @@
   </div>
   <div class="row">
     <div class="row-left">
-      <img src="./assets/<?php echo getAboutDate('PERSONAL_IMG_NAME', 'about'); ?>" alt="about photo" style="border-radius: 20px;">
+      <img src="./assets/<?php echo getAboutDate('PERSONAL_IMG_NAME', 'about'); ?>" alt="<?php echo getAboutDate('PERSONAL_IMG_NAME', 'about'); ?>" style="border-radius: 20px;">
     </div>
     <div class="row-right">
       <p class="text">

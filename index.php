@@ -25,7 +25,7 @@
     <div class="row-right">
       <div class="img-border">
         <div class="img-container">
-          <img src="./assets/<?php echo getAboutDate('COVER_IMG_NAME', 'about'); ?>" alt="my photo" style="border-radius: 30px;">
+          <img src="./assets/<?php echo getAboutDate('COVER_IMG_NAME', 'about'); ?>" alt="<?php echo getAboutDate('COVER_IMG_NAME', 'about'); ?>" style="border-radius: 30px;">
         </div>
       </div>
     </div>

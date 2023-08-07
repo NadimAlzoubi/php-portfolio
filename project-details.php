@@ -83,7 +83,7 @@
                 $result = mysqli_query($connect, $query);
                 if(isset($result)){
                     while($row = mysqli_fetch_assoc($result)){
-                      echo '<img src="./assets/' . $row['IMAGE_NAME'] . '">';
+                      echo '<img src="./assets/' . $row['IMAGE_NAME'] . '" alt="' . $row['IMAGE_NAME'] . '" />';
                     }
                 }
             ?>

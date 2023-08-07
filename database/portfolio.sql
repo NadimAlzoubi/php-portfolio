@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 07, 2023 at 10:29 PM
+-- Generation Time: Aug 07, 2023 at 10:57 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -47,6 +47,13 @@ CREATE TABLE `about` (
   `COVER_IMG_NAME` text DEFAULT NULL,
   `PERSONAL_IMG_NAME` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `about`
+--
+
+INSERT INTO `about` (`ID`, `FIRST_NAME`, `LAST_NAME`, `JOB_TITLE`, `DATE_OF_BIRTH`, `ABOUT_ME`, `ADDRESS`, `PHONE_NUMBER`, `EMAIL`, `LINKEDIN`, `YOUTUBE`, `FACEBOOK`, `INSTAGRAM`, `WHATSAPP`, `TELEGRAM`, `CV_FILE_NAME`, `COVER_IMG_NAME`, `PERSONAL_IMG_NAME`) VALUES
+(3, '[value-1]', '[value-2]', '[value-3]', '0000-00-00', '[value-5]', '[value-6]', '[value-7]', '[value-8]', '[value-9]', '[value-10]', '[value-11]', '[value-12]', '[value-13]', '[value-14]', '[value-15]', '[value-16]', '[value-17]');
 
 -- --------------------------------------------------------
 
@@ -178,7 +185,7 @@ ALTER TABLE `skills`
 -- AUTO_INCREMENT for table `about`
 --
 ALTER TABLE `about`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `login`
