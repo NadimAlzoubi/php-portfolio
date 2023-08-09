@@ -39,7 +39,7 @@
     <section class="home container">
         <div class="project-summry">
         <?php
-          $sql = "SELECT * FROM PROJECTS WHERE PROJECT_ID = " . base64_decode($_GET['id']);
+          $sql = "SELECT * FROM projects WHERE PROJECT_ID = " . base64_decode($_GET['id']);
           $result = mysqli_query($connect, $sql);
           if(isset($result)){
             while($row=mysqli_fetch_assoc($result)){
