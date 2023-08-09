@@ -45,7 +45,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="">Description</label>
-                                    <textarea style="height: 100px;" class="form-control" value="<?php echo $item['DESCRIPTION'] ?>" name="description"></textarea>
+                                    <textarea style="height: 100px;" class="form-control" name="description"><?php echo $item['DESCRIPTION'] ?></textarea>
                                 </div>
                                 <div class="form-group">
                                     <label for="">Date *</label>

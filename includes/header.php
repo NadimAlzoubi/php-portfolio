@@ -41,9 +41,15 @@
             <li class="nav-item">
               <a href="skills.php" class="nav-link">skills</a>
             </li>
-            <li class="nav-item">
-              <a href="projects.php" class="nav-link">projects</a>
-            </li>
+            <?php
+              if(!empty(getProjectData())){
+            ?>
+              <li class="nav-item">
+                <a href="projects.php" class="nav-link">projects</a>
+              </li>
+            <?php
+              }
+            ?>
             <li class="nav-item">
               <a href="contact.php" class="nav-link">contact</a>
             </li>
