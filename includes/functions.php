@@ -125,7 +125,7 @@
 <?php
   function getResumeData(){
     global $connect;
-    $query = "SELECT * FROM resume";
+    $query = "SELECT * FROM resume ORDER BY DATE_TO DESC";
     $result = mysqli_query($connect, $query);
     $data = array();
     while ($row = mysqli_fetch_assoc($result)) {
@@ -280,7 +280,7 @@ function getSkillDateById($id){
 <?php
   function getProjectData(){
     global $connect;
-    $query = "SELECT * FROM projects";
+    $query = "SELECT * FROM projects ORDER BY LAUNCH_DATE DESC";
     $result = mysqli_query($connect, $query);
     $data = array();
     while ($row = mysqli_fetch_assoc($result)) {

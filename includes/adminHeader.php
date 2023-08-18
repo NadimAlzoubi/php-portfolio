@@ -131,6 +131,9 @@ if(!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true){
         <ul class="dropdown-menu dropdown-user">
             <li><a href="./setting.php"><i class="fa fa-gear fa-fw"></i> Settings</a>
             </li>
+            <li>
+                <a href="../"><i class="fa fa-sign-out fa-fw"></i> Back to home</a>
+            </li>
             <li class="divider"></li>
             <li><a href="./logout.php"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
             </li>
